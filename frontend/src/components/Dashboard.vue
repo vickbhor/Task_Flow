@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen relative z-10">
+  <div class="flex flex-col md:flex-row w-full h-screen relative z-10">
     <Sidebar
       :currentUser="currentUser"
       :activeTab="activeTab"
@@ -7,14 +7,14 @@
       @logout="handleLogout"
     />
 
-    <div class="flex-1 flex flex-col relative bg-void border-l border-white/5 overflow-hidden">
+    <div class="flex-1 flex flex-col relative bg-void border-t md:border-t-0 md:border-l border-white/5 overflow-hidden">
       <StarfieldBackground />
       <div class="absolute inset-0 bg-gradient-to-br from-surface/70 to-void/90 pointer-events-none"></div>
 
       <div class="relative z-10 flex-1 flex flex-col overflow-hidden">
         <Header :title="headerTitle" @create-new="showTasks = false" />
 
-        <div class="flex-1 overflow-y-auto p-6 md:p-12">
+        <div class="flex-1 overflow-y-auto p-4 md:p-12">
           <Transition name="slide-fade" mode="out-in">
             <TaskForm v-if="!showTasks" @submit="handleCreateTask" @cancel="showTasks = true" />
             <TaskList v-else :tasks="tasks" :searchQuery="searchQuery" :pagination="pagination" @update:search="updateSearch" @toggle-status="toggleTaskStatus" @delete-task="handleDeleteTask" @page-change="changePage" />
@@ -28,7 +28,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router'; // Router ka hook
+import { useRouter } from 'vue-router';
 
 import Sidebar from '../components/Sidebar.vue';
 import Header from '../components/Header.vue';
@@ -36,7 +36,7 @@ import TaskForm from '../components/TaskForm.vue';
 import TaskList from '../components/TaskList.vue';
 import StarfieldBackground from '../components/StarfieldBackground.vue';
 
-const router = useRouter(); // Router setup kiya
+const router = useRouter();
 const API_URL = 'https://task-flow-04bt.onrender.com/api';
 const token = ref(localStorage.getItem('token') || '');
 const currentUser = ref({ username: '', email: '' });
@@ -65,7 +65,7 @@ onMounted(() => {
 const handleLogout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  router.push('/login'); // URL change karke Login par bhej do
+  router.push('/login');
 };
 
 const fetchTasks = async () => {

@@ -15,7 +15,7 @@
       <p class="text-white/30 tracking-[0.3em] uppercase text-xs">No Directives Found</p>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
+    <div v-else class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 w-full px-4 md:px-0">
       <div
         v-for="task in tasks"
         :key="task._id"
