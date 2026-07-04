@@ -1,3 +1,15 @@
+<template>
+  <button
+    @click="toggle"
+    class="fixed bottom-6 right-6 z-[99999] group w-14 h-14 rounded-full border border-white/15 bg-void/70 backdrop-blur-xl flex items-center justify-center transition-colors hover:border-gold/60"
+    :aria-label="playing ? 'Mute background sound' : 'Play background sound'"
+  >
+    <span class="flex items-end gap-[3px] h-4">
+      <span v-for="i in 3" :key="i" class="w-[2px] bg-gold rounded-full sound-bar" :class="{ 'sound-bar--active': playing }" :style="{ animationDelay: `${i * 0.12}s` }"></span>
+    </span>
+  </button>
+</template>
+
 <script setup>
 import { ref, onUnmounted } from 'vue';
 
@@ -24,7 +36,7 @@ const PHRASE = [
   { note: 1046.50, dur: 2.0 }, // C6 (long resolution)
 ];
 
-// Warm ethereal pad chords (kept low to contrast with the high twinkling melody)
+// Warm ethereal pad chords
 const CHORDS = [
   [261.63, 329.63, 392.00, 493.88], // Cmaj7
   [220.00, 261.63, 329.63, 392.00], // Am7
@@ -37,14 +49,12 @@ const LOOKAHEAD = 0.15;
 const SCHEDULER_TICK_MS = 100;
 
 const playMelodyNote = (freq, time, dur) => {
-  // Using pure sine waves for the sweetest, softest sound
   [-2, 2].forEach((cents) => {
     const osc = ctx.createOscillator();
     osc.type = 'sine'; 
     osc.frequency.value = freq;
     osc.detune.value = cents;
 
-    // Slower, deeper vibrato for a "drifting in space" feel
     const vibrato = ctx.createOscillator();
     vibrato.frequency.value = 3;
     const vibratoGain = ctx.createGain();
@@ -56,7 +66,6 @@ const playMelodyNote = (freq, time, dur) => {
 
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0, time);
-    // Slower attack so notes fade in like glowing stars
     gain.gain.linearRampToValueAtTime(0.12, time + 0.15); 
     gain.gain.exponentialRampToValueAtTime(0.0001, time + dur + 0.5);
 
@@ -76,7 +85,7 @@ const swapChord = (time) => {
   dying.forEach(({ gain, osc }) => {
     gain.gain.cancelScheduledValues(time);
     gain.gain.setValueAtTime(gain.gain.value, time);
-    gain.gain.linearRampToValueAtTime(0, time + 2.0); // very slow fade out
+    gain.gain.linearRampToValueAtTime(0, time + 2.0);
     osc.stop(time + 2.5);
   });
 
@@ -90,11 +99,11 @@ const swapChord = (time) => {
 
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 800; // Muffled filter for distant space hum
+    filter.frequency.value = 800;
 
     const gain = ctx.createGain();
     gain.gain.value = 0;
-    gain.gain.linearRampToValueAtTime(0.035, time + 2.0); // very slow fade in
+    gain.gain.linearRampToValueAtTime(0.035, time + 2.0);
 
     osc.connect(filter);
     filter.connect(gain);
@@ -113,7 +122,7 @@ const scheduler = () => {
     }
 
     const step = PHRASE[phraseStep % PHRASE.length];
-    const jitter = (Math.random() - 0.5) * 0.05; // Slightly more human variation
+    const jitter = (Math.random() - 0.5) * 0.05;
     playMelodyNote(step.note, nextNoteTime + jitter, step.dur);
     nextNoteTime += step.dur;
     phraseStep++;
@@ -130,11 +139,10 @@ const start = async () => {
     masterGain.connect(ctx.destination);
     masterGain.gain.linearRampToValueAtTime(0.55, ctx.currentTime + 1.5);
 
-    // INCREASED DELAY for massive space echo
     delayNode = ctx.createDelay(2.5);
-    delayNode.delayTime.value = 0.75; // Slower echoes
+    delayNode.delayTime.value = 0.75;
     feedbackGain = ctx.createGain();
-    feedbackGain.gain.value = 0.45; // Longer echo trails
+    feedbackGain.gain.value = 0.45;
     
     delayNode.connect(feedbackGain);
     feedbackGain.connect(delayNode);
@@ -199,3 +207,9 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.sound-bar { height: 4px; animation: none; transition: height 0.2s ease; }
+.sound-bar--active { animation: soundWave 0.9s ease-in-out infinite alternate; }
+@keyframes soundWave { from { height: 4px; } to { height: 16px; } }
+</style>
