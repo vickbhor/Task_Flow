@@ -1,0 +1,175 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Geist:wght@500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+@theme {
+  /* Core surfaces — kept the void/black base, this is still your brand */
+  --color-void: #050505;
+  --color-ink: #000000;
+  --color-surface: #0c1324;       /* Astra "surface" swapped in for the panel/section backgrounds */
+  --color-surface-2: #151b2d;     /* Astra "surface-container-low" */
+  --color-surface-3: #191f31;     /* Astra "surface-container" */
+
+  /* Text */
+  --color-bone: #f5f3ee;
+  --color-fog: #8c8c8c;
+  --color-mist: #ccc3d8;          /* Astra "on-surface-variant" — for secondary telemetry text */
+
+  /* Signature accent — kept your existing gold as the primary brand color */
+  --color-gold: #ecd06f;
+  --color-gold-dim: #8a7a44;
+
+  /* New from Astra Immersive: violet becomes the "energy" accent for the
+     planet/interactive elements, blue becomes the tertiary data accent.
+     Gold stays your primary brand color everywhere else (buttons, nav, etc). */
+  --color-nebula: #7c3aed;
+  --color-nebula-soft: #d2bbff;
+  --color-void-blue: #89ceff;
+
+  /* Alien-planet login scene: deep indigo ground/sky + bioluminescent teal
+     creature glow. Gold stays the CTA color so the button still reads as
+     "brand" against the new backdrop. */
+  --color-alien-deep: #1a1033;
+  --color-alien-mid: #2c1b52;
+  --color-alien-teal: #5eead4;
+  --color-alien-teal-soft: #9df3e4;
+
+  /* Status */
+  --color-signal: #ff4b3e;
+  --color-mid: #e8b84b;
+  --color-low: #6fce8f;
+
+  --font-display: 'Space Grotesk', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Geist', ui-monospace, 'SF Mono', monospace;
+  --tracking-widest: 0.28em;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smoothness */
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-bone);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(circle at 50% 0%, #151310 0%, #050505 65%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: black;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold-dim);
+  border-radius: 10px;
+}
+
+/* Grain texture, layered over everything */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+}
+
+/* Utility: gold glow used on focus/active signature moments */
+.gold-glow {
+  box-shadow: 0 0 30px rgba(236, 208, 111, 0.25);
+}
+
+/* ===== Astra Immersive additions: telemetry / glass UI kit ===== */
+
+/* Glass panel — the "holographic overlay suspended in a vacuum" surface
+   used for telemetry cards, the outro panel, and status pills. */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(236, 208, 111, 0.18);
+  border-top-color: rgba(236, 208, 111, 0.32); /* brighter top-left, per DESIGN.md */
+  border-left-color: rgba(236, 208, 111, 0.32);
+}
+
+.glass-panel--active {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 0 15px rgba(236, 208, 111, 0.2);
+}
+
+/* Status pill, e.g. "● SYSTEM ONLINE" */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(236, 208, 111, 0.3);
+  background: rgba(236, 208, 111, 0.06);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.status-pill__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-gold);
+  animation: statusPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(236, 208, 111, 0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(236, 208, 111, 0); }
+}
+
+/* Telemetry stat — small label/value pair used in card footers */
+.telemetry-stat__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-mist);
+  opacity: 0.7;
+}
+
+.telemetry-stat__value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-bone);
+  margin-top: 2px;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
