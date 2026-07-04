@@ -11,7 +11,7 @@
       <p ref="heroEyebrow" class="text-[11px] tracking-[0.5em] text-gold uppercase mb-6 opacity-0 font-mono">
         Command your directives
       </p>
-      <h1 ref="heroTitle" class="font-display font-black uppercase text-[15vw] md:text-[10vw] leading-[0.9] text-bone">
+      <h1 ref="heroTitle" class="font-display font-black uppercase whitespace-nowrap text-[clamp(2.25rem,13vw,7rem)] leading-[0.9] text-bone">
         Task<span class="text-gold">_</span>Flow
       </h1>
       <p ref="heroTag" class="mt-6 text-sm md:text-base text-fog tracking-wide max-w-md mx-auto opacity-0">

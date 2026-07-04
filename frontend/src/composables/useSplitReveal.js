@@ -14,6 +14,7 @@ export function splitReveal(el, { delay = 0, stagger = 0.02 } = {}) {
   const text = el.textContent;
   el.textContent = '';
   el.style.display = 'inline-block';
+  el.style.whiteSpace = 'nowrap';
 
   const chars = [...text].map((char) => {
     const wrap = document.createElement('span');

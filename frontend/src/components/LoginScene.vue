@@ -4,10 +4,10 @@
     <div class="absolute inset-0 bg-gradient-to-b from-void via-transparent to-void/80"></div>
     <StarfieldBackground />
 
-    <div class="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center gap-8 px-6 py-24 md:flex-row md:gap-16">
+    <div class="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center gap-4 px-6 py-12 md:flex-row md:gap-16 md:py-24">
       <!-- alien -->
       <div ref="alienCol" class="relative flex-1 opacity-0">
-        <div class="float-y relative mx-auto w-[280px] md:w-[420px]">
+        <div class="float-y relative mx-auto w-[190px] sm:w-[240px] md:w-[420px]">
           <!-- both frames stacked; we crossfade + blink between them instead
                of hard-swapping the src, so it reads as the alien actually
                closing its eyes rather than a jump-cut -->
@@ -26,22 +26,22 @@
           />
           <div class="absolute -bottom-6 left-1/2 h-6 w-40 -translate-x-1/2 rounded-full bg-nebula/40 blur-2xl pulse-glow"></div>
         </div>
-        <p class="mt-8 text-center font-mono text-xs tracking-[0.25em] text-fog uppercase">
+        <p class="mt-4 md:mt-8 text-center font-mono text-xs tracking-[0.25em] text-fog uppercase">
           {{ statusLine }}
         </p>
       </div>
 
       <!-- form -->
       <div ref="panelCol" class="w-full max-w-lg flex-1 opacity-0">
-        <div class="relative rounded-3xl glass-panel p-9 md:p-12 scale-[1.04]">
+        <div class="relative rounded-3xl glass-panel p-6 md:p-12">
           <span class="absolute -top-3 left-8 rounded-full bg-gold px-3 py-1 font-mono text-[10px] tracking-[0.2em] text-black">
             System / {{ isLogin ? '01' : '02' }}
           </span>
-          <h2 ref="heading" class="mb-8 mt-2 text-4xl font-display font-bold uppercase text-bone md:text-6xl">
+          <h2 ref="heading" class="mb-6 md:mb-8 mt-2 text-3xl md:text-6xl font-display font-bold uppercase text-bone">
             {{ isLogin ? 'Access' : 'Initiate' }}
           </h2>
 
-          <form @submit.prevent="handleSubmit" class="space-y-6" ref="formEl">
+          <form @submit.prevent="handleSubmit" class="space-y-4 md:space-y-6" ref="formEl">
             <div v-if="!isLogin" class="field">
               <label class="mb-2 block font-mono text-[10px] tracking-[0.2em] text-fog uppercase">Username</label>
               <input
@@ -146,11 +146,13 @@ onMounted(async () => {
   const fields = formEl.value.querySelectorAll('.field');
   gsap.set(fields, { opacity: 0, y: 16 });
 
+  const panelRestScale = window.innerWidth < 768 ? 1 : 1.04;
+
   gsap.timeline({
     scrollTrigger: { trigger: formSection.value, start: 'top 70%', toggleActions: 'play none none reverse' },
   })
     .to(alienCol.value, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
-    .to(panelCol.value, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'power3.out' }, '-=0.6')
+    .to(panelCol.value, { opacity: 1, y: 0, scale: panelRestScale, duration: 0.9, ease: 'power3.out' }, '-=0.6')
     .add(() => splitReveal(heading.value, { stagger: 0.03 }), '-=0.5')
     .to(fields, { opacity: 1, y: 0, duration: 0.55, stagger: 0.08, ease: 'power3.out' }, '-=0.5');
 

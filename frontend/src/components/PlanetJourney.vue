@@ -33,7 +33,7 @@
 
       <!-- planet + orbit rings -->
       <div ref="planetWrap" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div class="relative h-[68vh] w-[68vh] max-h-[720px] max-w-[720px]">
+        <div class="relative h-[min(68vh,78vw)] w-[min(68vh,78vw)] max-h-[720px] max-w-[720px]">
           <div ref="glowEl" class="absolute inset-[-25%] rounded-full blur-3xl" style="background: radial-gradient(circle, rgba(236,208,111,0.35) 0%, transparent 60%)"></div>
 
           <svg ref="ringBack" viewBox="0 0 400 400" class="absolute inset-[-18%] h-[136%] w-[136%]">
@@ -161,6 +161,9 @@ const progressBar = ref(null);
 const cardRefs = ref([]);
 
 let scrollTriggerInstance, outerRingTween;
+let isMobile = window.innerWidth < 768;
+const onResize = () => { isMobile = window.innerWidth < 768; };
+window.addEventListener('resize', onResize);
 
 const clamp01 = (t) => Math.min(1, Math.max(0, t));
 const mapT = (v, a, b) => clamp01((v - a) / (b - a));
@@ -174,11 +177,14 @@ const applyProgress = (p) => {
 
   const tiltX = p < 0.5 ? lerp(8, -4, p / 0.5) : lerp(-4, -14, (p - 0.5) / 0.5);
   // planet lives on the right two-thirds of the screen the whole time now that
-  // every card is anchored left — starts already off-center so there's no
-  // empty-screen moment at the top of the section
-  const tx = p < 0.25 ? lerp(28, 38, p / 0.25) : p < 0.5 ? lerp(38, 46, (p - 0.25) / 0.25) : p < 0.75 ? lerp(46, 52, (p - 0.5) / 0.25) : lerp(52, 56, (p - 0.75) / 0.25);
+  // every card is anchored left. On phones the viewport is too narrow for the
+  // same drift distance (it would push the planet off-screen entirely), so we
+  // use a much smaller, viewport-safe range there instead.
+  const txRange = isMobile ? [10, 16, 20, 24] : [28, 38, 46, 52, 56];
+  const scaleRange = isMobile ? [0.62, 0.78, 0.9, 0.8] : [1.0, 1.25, 1.5, 1.2];
+  const tx = p < 0.25 ? lerp(txRange[0], txRange[1], p / 0.25) : p < 0.5 ? lerp(txRange[1], txRange[2], (p - 0.25) / 0.25) : p < 0.75 ? lerp(txRange[2], txRange[3], (p - 0.5) / 0.25) : lerp(txRange[3], txRange[3] + (isMobile ? 2 : 4), (p - 0.75) / 0.25);
   const ty = p < 0.5 ? lerp(0, -4, p / 0.5) : lerp(-4, -10, (p - 0.5) / 0.5);
-  const scale = p < 0.35 ? lerp(1.0, 1.25, p / 0.35) : p < 0.7 ? lerp(1.25, 1.5, (p - 0.35) / 0.35) : lerp(1.5, 1.2, (p - 0.7) / 0.3);
+  const scale = p < 0.35 ? lerp(scaleRange[0], scaleRange[1], p / 0.35) : p < 0.7 ? lerp(scaleRange[1], scaleRange[2], (p - 0.35) / 0.35) : lerp(scaleRange[2], scaleRange[3], (p - 0.7) / 0.3);
   const glow = p < 0.5 ? lerp(0.3, 0.7, p / 0.5) : lerp(0.7, 0.5, (p - 0.5) / 0.5);
 
   gsap.set(planetWrap.value, { x: `${tx}%`, y: `${ty}%`, scale, rotateX: tiltX, transformPerspective: 1200 });
@@ -220,6 +226,7 @@ onMounted(() => {
 onUnmounted(() => {
   scrollTriggerInstance?.kill();
   outerRingTween?.kill();
+  window.removeEventListener('resize', onResize);
 });
 </script>
 
