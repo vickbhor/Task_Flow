@@ -43,7 +43,7 @@ import StarfieldBackground from '../components/StarfieldBackground.vue';
 import RocketLaunchOverlay from '../components/RocketLaunchOverlay.vue';
 
 const router = useRouter();
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-flow-04bt.onrender.com/api';
 const token = ref(localStorage.getItem('token') || '');
 const currentUser = ref({ username: '', email: '' });
 

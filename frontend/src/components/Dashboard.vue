@@ -37,7 +37,7 @@ import TaskList from '../components/TaskList.vue';
 import StarfieldBackground from '../components/StarfieldBackground.vue';
 
 const router = useRouter(); // Router setup kiya
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://task-flow-04bt.onrender.com/api';
 const token = ref(localStorage.getItem('token') || '');
 const currentUser = ref({ username: '', email: '' });
 
